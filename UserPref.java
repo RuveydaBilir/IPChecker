@@ -34,7 +34,7 @@ public class UserPref {
         //TODO: read file and add them to list
     }
 
-    //Getters
+    //Getters //TODO: Read file!
     float getAbuseDBSev(float severity){
         return abuseDBSev;
     }

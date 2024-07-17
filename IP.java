@@ -1,15 +1,17 @@
 public class IP {
     private String isp; 
     private String country; 
-    private float score; // 0-100
-    private String type; // Malicious, careful, OK etc.
+    private double score; // 0-100
+    private String type; // Malicious, be careful, OK etc.
+    private int abuseDBScore;
+    private int vtScore;
+    private int ipVoidScore;
     private final String ip;
 
-    public IP(String newIp, String country, String isp){
+    public IP(String newIp){
         ip = newIp;
-        this.country = country;
-        this.isp = isp;
         type = "OK";
+        score = 0;
     }
     
     //setters
@@ -22,9 +24,32 @@ public class IP {
     void setScore(){
         // TODO: Math calculations
         // setType(..)
+        double ipScore = ((abuseDBScore/100)+(vtScore/92)+(ipVoidScore/94))*(100/3);
+
+        if(score<30){
+            setType("Clean");
+        }
+        else if(score<50){
+            setType("OK");
+        }
+        else if(score<80){
+            setType("Suspicious");
+        }
+        else{
+            setType("Malicious");
+        }
     }
     private void setType(String newType){
         type = newType;
+    }
+    void setAbuseDBScore(int score){
+        abuseDBScore = score;
+    }
+    void setVTScore(int score){
+        vtScore = score;
+    }
+    void setIPVoidScore(int score){
+        ipVoidScore = score;
     }
 
     //Getters
@@ -40,7 +65,7 @@ public class IP {
     String getType(){
         return type;
     }
-    float getScore(){
+    double getScore(){
         return score;
     }
 
