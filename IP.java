@@ -21,10 +21,8 @@ public class IP {
     void setCountry(String newCountry){
         country = newCountry;
     }
-    void setScore(){
-        // TODO: Math calculations
-        // setType(..)
-        double ipScore = ((abuseDBScore/100)+(vtScore/92)+(ipVoidScore/94))*(100/3);
+    void updateScore(int scoreAdd){
+        score = ((abuseDBScore/100)+(vtScore/92))*(100/2);
 
         if(score<30){
             setType("Clean");
@@ -84,6 +82,11 @@ public class IP {
         System.out.println("Country: " + getCountry());
         System.out.println("Status: " + getType());
         System.out.println("Overall Score: " + getScore());
+        System.out.println("-------------------------");
+        System.out.println("DETAILS: ");
+        System.out.println("AbuseIPDB Confidence Score: " + abuseDBScore +"/100");
+        System.out.println("VirusTotal Confidence Score: " + vtScore +"/92");
+        //System.out.println("IPVoid Confidence Score: " + ipVoidScore +"/96");
         System.out.println("-------------------------");
     }
 

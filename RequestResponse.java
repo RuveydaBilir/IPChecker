@@ -15,36 +15,40 @@ public class RequestResponse {
     private String vt_api;
     private String ipVoid_api;
     private final String ABUSE_IP_URL = "https://api.abuseipdb.com/api/v2/check?ipAddress="; 
-    private final String VT_URL = ""; 
+    private final String VT_URL = "https://www.virustotal.com/api/v3/ip_addresses/"; 
     private final String IPVOID_URL = ""; 
     private int abuseDBScore;
     private int vtScore;
     private int ipVoidScore;
     private IP ip;
 
-    public RequestResponse(IP ip){
+    public RequestResponse(IP ip) throws IOException{
         this.ip = ip;
+        setAPIs();
     }
 
-    public void setAPIs() throws IOException{
+    public final void setAPIs() throws IOException{
         Properties prop = new Properties();
         try {
             FileInputStream fis = new FileInputStream("config.properties");
             prop.load(fis);
             abuseIPDB_api = prop.getProperty("ABUSEDB_API");
-            System.out.println("AbuseIPDB API: " + abuseIPDB_api);
+            //System.out.println("AbuseIPDB API: " + abuseIPDB_api);
+            vt_api = prop.getProperty("VT_API");
+            //System.out.println("VT API: " + vt_api);
+
         } catch (IOException e) {
             System.err.println("ERROR: Reading API keys failed. Please check config.properties file.");
         }
     }
-    private StringBuilder sendGetRequest(String urlStr) throws Exception{
+    private StringBuilder sendGetRequest(String urlStr,String keyProperty, String api) throws Exception{
         URI uri = new URI(urlStr);
         URL url = uri.toURL();
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Key", abuseIPDB_api);
+        connection.setRequestProperty(keyProperty, api);
 
         int responseCode = connection.getResponseCode();
         if(responseCode != HttpURLConnection.HTTP_OK){
@@ -70,9 +74,8 @@ public class RequestResponse {
     }
 
     public void sendGetRequestAbuseDB() throws Exception{ // Should I add this?!: String urlStr, Map<String, String> headers
-        setAPIs();
         String urlStr = ABUSE_IP_URL + ip.getIP();
-        String jsonContent= sendGetRequest(urlStr).toString();
+        String jsonContent= sendGetRequest(urlStr,"Key",abuseIPDB_api).toString();
 
         int abuseScore = Integer.parseInt(extractValue(jsonContent, "abuseConfidenceScore"));
         String coutry = extractValue(jsonContent, "countryCode");
@@ -82,11 +85,22 @@ public class RequestResponse {
         ip.setCountry(coutry);
         ip.setISP(isp);
 
-        System.out.println("abuse Confidence Score: " + abuseScore);
-        System.out.println("country Code: " + coutry);
-        System.out.println("isp: " + isp);
-        ip.print();
-    }        
+        //System.out.println("AbuseIPDB Confidence Score: " + abuseScore);
+        //System.out.println("country Code: " + coutry);
+        //System.out.println("ISP: " + isp);
+    }  
+    
+    public void sendGetRequestVT() throws Exception{ // Should I add this?!: String urlStr, Map<String, String> headers
+        String urlStr = VT_URL + ip.getIP();
+        String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        int index = jsonContent.indexOf("last_analysis_stats", 0);
+        jsonContent = jsonContent.substring(index);
+        //System.out.println(jsonContent);
+
+        int abuseScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
+
+        ip.setVTScore(abuseScore);
+    } 
 
 
     public void getTitle(StringBuilder htmlContent){

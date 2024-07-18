@@ -42,16 +42,18 @@ public class IPWizard {
     }
     
     public static void main(String[] args) throws Exception {
-        //RequestResponse.sendGetRequest(test_url); it is workingg !!!
         System.out.println("Welcome to the IP Wizard.");
         System.out.println("It can check every IP score you need.\n");
         Scanner scan = new Scanner(System.in);
         System.out.print("Enter the IPv4 address: ");
         String ipStr = scan.nextLine();
         IP ip = new IP(correctIP(ipStr));
-        System.out.println("Checking IPv4 address " + ip.getIP() + " :");
+        System.out.println("Checking IPv4 address " + ip.getIP());
+        System.out.println("-------------------------");
         
         RequestResponse reqRes = new RequestResponse(ip);
         reqRes.sendGetRequestAbuseDB();
+        reqRes.sendGetRequestVT();
+        ip.print();
     }
 }

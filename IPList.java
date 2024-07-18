@@ -8,6 +8,7 @@ public class IPList {
     public IPList(String ipFileName){
         setIPList();
         ipFile = ipFileName;
+        //System.out.println("IP list object created");
     }
 
     private boolean  setIPList(){
