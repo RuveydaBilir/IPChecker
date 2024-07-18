@@ -77,4 +77,14 @@ public class IP {
         // float IPVoid score = ;
     }
 
+    void print(){
+        System.out.println("-------------------------");
+        System.out.println("IP: " + getIP());
+        System.out.println("ISP: " + getISP());
+        System.out.println("Country: " + getCountry());
+        System.out.println("Status: " + getType());
+        System.out.println("Overall Score: " + getScore());
+        System.out.println("-------------------------");
+    }
+
 }

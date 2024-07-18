@@ -52,6 +52,6 @@ public class IPWizard {
         System.out.println("Checking IPv4 address " + ip.getIP() + " :");
         
         RequestResponse reqRes = new RequestResponse(ip);
-        reqRes.sendGetRequest(test_url);
+        reqRes.sendGetRequestAbuseDB();
     }
 }
