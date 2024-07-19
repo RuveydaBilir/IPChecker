@@ -6,21 +6,17 @@ import java.util.Arrays;
 import java.util.Properties;
 
 public class UserPref {
-    private String userPrefFile;
-    private String okCountryFile;
-    private String okISPFile;
     private int abuseDBSev;
     private int vtSev;
     private int ipVoidSev;
-    private ArrayList<String> countryList = new ArrayList<>();
-    private ArrayList<String> ispList = new ArrayList<>();
+    private ArrayList<String> resCountryList = new ArrayList<>();
+    private ArrayList<String> resIspList = new ArrayList<>();
+    private ArrayList<String> allowCountryList = new ArrayList<>();
+    private ArrayList<String> allowIspList = new ArrayList<>();
     private ArrayList<String> knownIPList = new ArrayList<>();
 
-    public UserPref(String userPrefFileName, String okCountryFileName, String okISPFileName){
-        //System.out.println("UserPref created.");
-        userPrefFile = userPrefFileName;
-        okCountryFile = okCountryFileName;
-        okISPFile = okISPFileName;
+    public UserPref(){
+        System.out.println("AAAAAA");
         setProperties();
     }
 
@@ -28,14 +24,16 @@ public class UserPref {
         Properties prop = new Properties();
         try {
             FileInputStream fis = new FileInputStream("config.properties");
-            countryList = setPropertyLİst("RESTRICTED_COUNTRY", fis, prop);
-            ispList = setPropertyLİst("RESTRICTED_ISP", fis, prop);
-            knownIPList = setPropertyLİst("KNOWN_IPS", fis, prop);
+            resCountryList = setPropertyLİst("RESTRICTED_COUNTRY", fis, prop);
+            resIspList = setPropertyLİst("RESTRICTED_ISP", fis, prop);
+            allowCountryList = setPropertyLİst("ALLOWED_COUNTRY", fis, prop);
+            allowIspList = setPropertyLİst("ALLOWED_ISP", fis, prop);
+            //knownIPList = setPropertyLİst("KNOWN_IPS", fis, prop);
 
             prop.load(fis);
 
-            System.out.println(countryList);
-            System.out.println(ispList);
+            System.out.println(resCountryList);
+            System.out.println(resIspList);
             System.out.println(knownIPList);
 
         } catch (IOException e) {
@@ -61,10 +59,7 @@ public class UserPref {
         abuseDBSev = severity;
     }
     void setVTSev(int severity){
-        abuseDBSev = severity;
-    }
-    void setipVoidSev(int severity){
-        abuseDBSev = severity;
+        vtSev = severity;
     }
 
     double getAbuseDBSev(){
@@ -73,13 +68,10 @@ public class UserPref {
     double getvtSev(){
         return vtSev;
     }
-    double getipVoidSev(){
-        return ipVoidSev;
+    ArrayList<String> getResCountryList(){
+        return resCountryList;
     }
-    ArrayList<String> getOKCountryList(){
-        return countryList;
-    }
-    ArrayList<String> getOKISPList(){
-        return ispList;
+    ArrayList<String> getResISPList(){
+        return resIspList;
     }
 }

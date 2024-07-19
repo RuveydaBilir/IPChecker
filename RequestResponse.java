@@ -13,14 +13,10 @@ import javax.net.ssl.HttpsURLConnection;
 public class RequestResponse {
     private String abuseIPDB_api;
     private String vt_api;
-    private String ipVoid_api;
+    //private String ipVoid_api;
     private final String ABUSE_IP_URL = "https://api.abuseipdb.com/api/v2/check?ipAddress="; 
     private final String VT_URL = "https://www.virustotal.com/api/v3/ip_addresses/"; 
-    private final String IPVOID_URL = ""; 
-    private int abuseDBScore;
-    private int vtScore;
-    private int ipVoidScore;
-    private IP ip;
+    private final IP ip;
 
     public RequestResponse(IP ip) throws IOException{
         this.ip = ip;
@@ -80,19 +76,19 @@ public class RequestResponse {
         int abuseScore = Integer.parseInt(extractValue(jsonContent, "abuseConfidenceScore"));
         String coutry = extractValue(jsonContent, "countryCode");
         String isp = extractValue(jsonContent, "isp");
-
+        boolean isTor = Boolean.parseBoolean(extractValue(jsonContent, "isTor"));
         ip.setAbuseDBScore(abuseScore);
         ip.setCountry(coutry);
         ip.setISP(isp);
+        ip.setIsTor(isTor);
 
-        //System.out.println("AbuseIPDB Confidence Score: " + abuseScore);
-        //System.out.println("country Code: " + coutry);
-        //System.out.println("ISP: " + isp);
+        //System.out.println(jsonContent);
     }  
     
     public void sendGetRequestVT() throws Exception{ // Should I add this?!: String urlStr, Map<String, String> headers
         String urlStr = VT_URL + ip.getIP();
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        System.out.println(jsonContent);
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
         //System.out.println(jsonContent);
@@ -113,33 +109,4 @@ public class RequestResponse {
         }
 
     }
-
-    private void setISPofIP(String content){
-        //set ip's isp according to the retrived data.
-    }
-    
-    private void setCountryofIP(String content){
-        //set ip's country according to the retrived data.
-    }
-
-    private void setAbuseDBScore() throws Exception{
-        //StringBuilder adbContent = sendGetRequest(ABUSE_IP_URL);
-        //setISPofIP(adbContent);
-        //setCountryofIP(adbContent);
-        int score = 0;
-        ip.setAbuseDBScore(score);
-    }
-    private void setVTScore() throws Exception{
-        //StringBuilder vtContent = sendGetRequest(VT_URL);
-
-        int score = 0;
-        ip.setVTScore(score);
-    }
-    private void setIPVoidScore() throws Exception{
-        //StringBuilder ipvContent = sendGetRequest(IPVOID_URL);
-
-        int score = 0;
-        ip.setIPVoidScore(score);
-    }
-
 }

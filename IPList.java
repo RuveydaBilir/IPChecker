@@ -5,9 +5,8 @@ public class IPList {
     private ArrayList<IP> newIps = new ArrayList<>();
     private String ipFile;
 
-    public IPList(String ipFileName){
+    public IPList(){
         setIPList();
-        ipFile = ipFileName;
         //System.out.println("IP list object created");
     }
 

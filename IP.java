@@ -5,7 +5,8 @@ public class IP {
     private String type; // Malicious, be careful, OK etc.
     private int abuseDBScore;
     private int vtScore;
-    private int ipVoidScore;
+    private boolean isTor;
+    private boolean isFromResCountry;
     private final String ip;
 
     public IP(String newIp){
@@ -21,8 +22,14 @@ public class IP {
     void setCountry(String newCountry){
         country = newCountry;
     }
-    void updateScore(int scoreAdd){
-        score = ((abuseDBScore/100)+(vtScore/92))*(100/2);
+    void setIsTor(boolean isTor){
+        this.isTor=isTor;
+    }
+    void setIsFromResCount(boolean is){
+        isFromResCountry = is;
+    }
+    void updateScore(double scoreAdd){
+        score = scoreAdd;
 
         if(score<30){
             setType("Clean");
@@ -46,8 +53,12 @@ public class IP {
     void setVTScore(int score){
         vtScore = score;
     }
-    void setIPVoidScore(int score){
-        ipVoidScore = score;
+
+    int getAbuseDBScore(){
+        return abuseDBScore;
+    }
+    int getVTScore(){
+        return vtScore;
     }
 
     //Getters
@@ -66,13 +77,8 @@ public class IP {
     double getScore(){
         return score;
     }
-
-    void checkDB(){
-        // Maybe these can be also ips feature
-        // TODO: reqRes classtan sonra tanımlanacak
-        // float AbuseDB score = ;
-        // float VirusTotal score = ;
-        // float IPVoid score = ;
+    boolean getIsTor(){
+        return isTor;
     }
 
     void print(){
@@ -81,11 +87,13 @@ public class IP {
         System.out.println("ISP: " + getISP());
         System.out.println("Country: " + getCountry());
         System.out.println("Status: " + getType());
+        System.out.println("Is Tor: " + getIsTor());
         System.out.println("Overall Score: " + getScore());
         System.out.println("-------------------------");
         System.out.println("DETAILS: ");
         System.out.println("AbuseIPDB Confidence Score: " + abuseDBScore +"/100");
         System.out.println("VirusTotal Confidence Score: " + vtScore +"/92");
+        System.out.println("Is from a restricted country: " + isFromResCountry );
         //System.out.println("IPVoid Confidence Score: " + ipVoidScore +"/96");
         System.out.println("-------------------------");
     }
