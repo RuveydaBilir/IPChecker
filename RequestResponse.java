@@ -15,7 +15,7 @@ public class RequestResponse {
     private String vt_api;
     //private String ipVoid_api;
     private final String ABUSE_IP_URL = "https://api.abuseipdb.com/api/v2/check?ipAddress="; 
-    private final String VT_URL = "https://www.virustotal.com/api/v3/ip_addresses/"; 
+    private final String VT_URL = "https://www.virustotal.com/api/v3/"; 
     private final IP ip;
 
     public RequestResponse(IP ip) throws IOException{
@@ -65,7 +65,15 @@ public class RequestResponse {
     private String extractValue(String content, String key){
         String searchKey = "\"" + key + "\":";
         int start = content.indexOf(searchKey) + searchKey.length();
-        int end = content.indexOf(",", start);
+        int end1 = content.indexOf(",", start);
+        int end2 = content.indexOf("}", start);
+        int end = end1;
+        if(end1<end2 && end1>-1){
+            end = end1;
+        }
+        else if(end2<end1 && end2>-1){
+            end = end2;
+        }
         return content.substring(start,end).trim();
     }
 
@@ -85,21 +93,107 @@ public class RequestResponse {
         //System.out.println(jsonContent);
     }  
     
-    public void sendGetRequestVT() throws Exception{ // Should I add this?!: String urlStr, Map<String, String> headers
-        String urlStr = VT_URL + ip.getIP();
+    public void sendGetRequestVTforIP() throws Exception{
+        //EXCELLENT IP: 195.208.216.109
+        String urlStr = VT_URL + "ip_addresses/" + ip.getIP();
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
-        System.out.println(jsonContent);
+        //System.out.println("CONTENT:");
+        //System.out.println(jsonContent);
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
         //System.out.println(jsonContent);
-
         int abuseScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
-
         ip.setVTScore(abuseScore);
+
+        sendGetRequestVTforResolutions();
+        sendGetRequestVTforComFiles();
+    }
+
+    public void sendGetRequestVTforResolutions() throws Exception{
+        String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/resolutions";
+        //String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/communicating_files";
+        String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        //System.out.println(jsonContent);
+        int count = Integer.parseInt(extractValue(jsonContent, "count"));
+        System.out.println("Number of resolution domains: " + count);
+        for(int i=0; i<count && i<5; i++){
+            
+            String fileID = extractValue(jsonContent, "id");
+            jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
+            //sendGetRequestVTforFile(fileID);
+            //sendGetRequestVTforDomain(fileID);
+            
+            System.out.println("A resolution ID");
+        }
+    }
+
+    public void sendGetRequestVTforComFiles() throws Exception{
+        String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/communicating_files";
+        String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        //System.out.println(jsonContent);
+        int count = Integer.parseInt(extractValue(jsonContent, "count"));
+        System.out.println("Number of communicating files: " + count);
+        for(int i=0; i<count && i<5 ; i++){
+            String fileID = extractValue(jsonContent, "id");
+            jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
+            sendGetRequestVTforFile(fileID);
+        }
+        //sendGetRequestVTforFile("4ffcf8024d170f3ab274ac9b90cb41520060feefba7c481b3548c77efb2477b9");
+    }
+
+    public void sendGetRequestVTforFile(String fileID) throws Exception{
+        String urlStr = VT_URL + "files/" + fileID;
+        urlStr = urlStr.replace("\"", "");
+        //String urlStr = VT_URL + "files/" + fileID + "/relationships/communicating_files";
+        String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        String name = extractValue(jsonContent, "meaningful_name");
+        //System.out.println(jsonContent);
+        String rule = extractValue(jsonContent, "rule_title");
+        int index = jsonContent.indexOf("last_analysis_stats", 0);
+        jsonContent = jsonContent.substring(index);
+        String malScore = extractValue(jsonContent, "malicious");
+        //System.out.println("Malware Score: " + malScore);
+        String detail = """
+                        File ID:\s""" + fileID.replace("\"", "").trim()
+                        + "\n\tKnown Name: " + name
+                        + "\n\tVirusTotal Score: " + malScore +"/92"
+                        + "\n\tRule: " + rule;
+        
+        ip.addDetail(detail);
+        ip.addRelationScore(Integer.parseInt(malScore));
+    } 
+
+    public void sendGetRequestVTforDomain(String domainID) throws Exception{
+        int lastIndex = domainID.lastIndexOf(".");
+        String tempString = domainID.substring(0, lastIndex);
+        int secondLastIndex = tempString.lastIndexOf(".");
+        domainID = domainID.substring(secondLastIndex + 1);
+
+        String urlStr = VT_URL + "domains/" + domainID;
+        urlStr = urlStr.replace("\"", "");
+        //String urlStr = VT_URL + "files/" + fileID + "/relationships/communicating_files";
+        String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        System.out.println(jsonContent);
+        /*String name = extractValue(jsonContent, "meaningful_name");
+        //System.out.println(jsonContent);
+        String rule = extractValue(jsonContent, "rule_title");
+        int index = jsonContent.indexOf("last_analysis_stats", 0);
+        jsonContent = jsonContent.substring(index);
+        String malScore = extractValue(jsonContent, "malicious");
+        //System.out.println("Malware Score: " + malScore);
+        String detail = """
+                        File ID:\s""" + domainID.replace("\"", "").trim()
+                        + "\n\tKnown Name: " + name
+                        + "\n\tVirusTotal Score: " + malScore +"/92"
+                        + "\n\tRule: " + rule;
+        
+        ip.addDetail(detail);
+        ip.addRelationScore(Integer.parseInt(malScore));
+        */
     } 
 
 
-    public void getTitle(StringBuilder htmlContent){
+    public void getTitle(StringBuilder htmlContent){ //Test amaçlı
         Pattern titlePattern = Pattern.compile("<title>(.*?)</title>", Pattern.CASE_INSENSITIVE);
         Matcher titleMatcher = titlePattern.matcher(htmlContent.toString());
         if (titleMatcher.find()) {

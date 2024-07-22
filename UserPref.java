@@ -8,15 +8,13 @@ import java.util.Properties;
 public class UserPref {
     private int abuseDBSev;
     private int vtSev;
-    private int ipVoidSev;
+    private int countryISPSev;
+    private int dateSev;
+    private int relatedSev;
     private ArrayList<String> resCountryList = new ArrayList<>();
     private ArrayList<String> resIspList = new ArrayList<>();
-    private ArrayList<String> allowCountryList = new ArrayList<>();
-    private ArrayList<String> allowIspList = new ArrayList<>();
-    private ArrayList<String> knownIPList = new ArrayList<>();
 
     public UserPref(){
-        System.out.println("AAAAAA");
         setProperties();
     }
 
@@ -24,24 +22,29 @@ public class UserPref {
         Properties prop = new Properties();
         try {
             FileInputStream fis = new FileInputStream("config.properties");
-            resCountryList = setPropertyLİst("RESTRICTED_COUNTRY", fis, prop);
-            resIspList = setPropertyLİst("RESTRICTED_ISP", fis, prop);
-            allowCountryList = setPropertyLİst("ALLOWED_COUNTRY", fis, prop);
-            allowIspList = setPropertyLİst("ALLOWED_ISP", fis, prop);
-            //knownIPList = setPropertyLİst("KNOWN_IPS", fis, prop);
+            resCountryList = setPropertyList("RESTRICTED_COUNTRY", fis, prop);
+            resIspList = setPropertyList("RESTRICTED_ISP", fis, prop);
+
+            countryISPSev = Integer.parseInt(prop.getProperty("COUNTRY_ISP_SEV","5").trim());
+            abuseDBSev = Integer.parseInt(prop.getProperty("ABUSEDB_SEV","30").trim());
+            vtSev = Integer.parseInt(prop.getProperty("VT_SEV","35").trim());
+            dateSev = Integer.parseInt(prop.getProperty("LAST_DATE_SEV","10").trim());
+            relatedSev = Integer.parseInt(prop.getProperty("RELATED_SEV","20").trim());
+
+            //knownIPList = setPropertyList("KNOWN_IPS", fis, prop);
 
             prop.load(fis);
 
-            System.out.println(resCountryList);
-            System.out.println(resIspList);
-            System.out.println(knownIPList);
+            //System.out.println(resCountryList);
+            //System.out.println(resIspList);
+            //System.out.println(knownIPList);
 
         } catch (IOException e) {
             System.err.println("ERROR: Setting properties failed. Please check config.properties file.");
         }
     }
 
-    private ArrayList<String> setPropertyLİst(String key, FileInputStream fis, Properties prop) throws IOException{
+    private ArrayList<String> setPropertyList(String key, FileInputStream fis, Properties prop) throws IOException{
         prop.load(fis);
         return convertToArrayList(prop.getProperty(key));
     }
@@ -54,19 +57,20 @@ public class UserPref {
         return new ArrayList<>(Arrays.asList(elements));
     }
 
-    //setters
-    void setAbuseDBSev(int severity){
-        abuseDBSev = severity;
-    }
-    void setVTSev(int severity){
-        vtSev = severity;
-    }
-
-    double getAbuseDBSev(){
+    int getAbuseDBSev(){
         return abuseDBSev;
     }
-    double getvtSev(){
+    int getvtSev(){
         return vtSev;
+    }
+    int getCountryISPSev(){
+        return countryISPSev;
+    }
+    int getDateSev(){
+        return dateSev;
+    }
+    int getRelatedSev(){
+        return relatedSev;
     }
     ArrayList<String> getResCountryList(){
         return resCountryList;

@@ -40,23 +40,43 @@ public class IPWizard {
     private static void calculate(IP ip) {
         double abuseDBSev = userPref.getAbuseDBSev();
         double vtSev = userPref.getvtSev();
-        double totalSev = abuseDBSev + vtSev;
+        double cISPSev = userPref.getCountryISPSev();
+        double dateSev = userPref.getDateSev();
+        double relatedSev = userPref.getRelatedSev();
+        double dateScore = 1;
+        double cISPScore = 0;
+
+        //CALCULATIONNNSSS!!!!!!!!!!!!!!!!!!!
+        double totalSev = abuseDBSev + vtSev +cISPSev + dateSev + relatedSev;
     
         double abuseDBWeight = abuseDBSev / totalSev;
         double vtWeight = vtSev / totalSev;
+        double cISPWeight = cISPSev / totalSev;
+        double dateWeight = dateSev / totalSev;
+        double relatedWeight = relatedSev / totalSev;
+
+        int sumOfList = 0;
+        for(int i=0; i<ip.getRelatedScoreList().size(); i++){
+            sumOfList+=ip.getRelatedScoreList().get(i);
+        }
     
         double abuseDBNormalizedScore = ip.getAbuseDBScore() / 100.0;
         double vtNormalizedScore = ip.getVTScore() / 92.0;
-    
-        double score = (abuseDBNormalizedScore * abuseDBWeight + vtNormalizedScore * vtWeight) * 100;
-    
+        double listNormalizedScore = sumOfList / 92.0;
+        
         if (userPref.getResCountryList().contains(ip.getCountry())) {
-            score = (score + 50) / 2;
             ip.setIsFromResCount(true);
+            cISPScore = 1;
         } else {
             ip.setIsFromResCount(false);
         }
-    
+        
+        double score = (abuseDBNormalizedScore * abuseDBWeight 
+                        + vtNormalizedScore * vtWeight 
+                        + listNormalizedScore * relatedWeight 
+                        + cISPScore * cISPWeight 
+                        + dateScore * dateWeight) * 100;
+        
         ip.updateScore(score);
     }
     
@@ -64,18 +84,27 @@ public class IPWizard {
         System.out.println("Welcome to the IP Wizard.");
         System.out.println("It can check every IP score you need.\n");
         Scanner scan = new Scanner(System.in);
-        System.out.print("Enter the IPv4 address: ");
+        System.out.print(">> Enter the IPv4 address: ");
         String ipStr = scan.nextLine();
         IP ip = new IP(correctIP(ipStr));
         System.out.println("Checking IPv4 address " + ip.getIP());
         
         RequestResponse reqRes = new RequestResponse(ip);
         reqRes.sendGetRequestAbuseDB();
-        reqRes.sendGetRequestVT();
+        reqRes.sendGetRequestVTforIP();
         calculate(ip);
         ip.print();
     }
 }
+
+/*
+ * Correct calculation:
+ * double score = (abuseDBNormalizedScore * abuseDBWeight 
+                        + vtNormalizedScore * vtWeight 
+                        + listNormalizedScore * relatedWeight 
+                        + cISPScore * cISPWeight 
+                        + dateScore * dateWeight) * 100;
+ */
 
 /*
  * private static void calculate(IP ip){

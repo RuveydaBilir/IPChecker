@@ -1,18 +1,23 @@
+import java.util.ArrayList;
+
 public class IP {
     private String isp; 
     private String country; 
+    private String detail;
     private double score; // 0-100
     private String type; // Malicious, be careful, OK etc.
     private int abuseDBScore;
     private int vtScore;
     private boolean isTor;
     private boolean isFromResCountry;
+    private ArrayList<Integer> relationScores = new ArrayList<>();
     private final String ip;
 
     public IP(String newIp){
         ip = newIp;
         type = "OK";
         score = 0;
+        detail = "";
     }
     
     //setters
@@ -27,6 +32,13 @@ public class IP {
     }
     void setIsFromResCount(boolean is){
         isFromResCountry = is;
+    }
+    void addDetail(String d){
+        detail += d;
+        detail +="\n";
+    }
+    void addRelationScore(int newScore){
+        relationScores.add(newScore);
     }
     void updateScore(double scoreAdd){
         score = scoreAdd;
@@ -60,6 +72,9 @@ public class IP {
     int getVTScore(){
         return vtScore;
     }
+    String getDetail(){
+        return detail;
+    }
 
     //Getters
     String getISP(){
@@ -80,6 +95,9 @@ public class IP {
     boolean getIsTor(){
         return isTor;
     }
+    ArrayList<Integer> getRelatedScoreList(){
+        return relationScores;
+    }
 
     void print(){
         System.out.println("-------------------------");
@@ -88,12 +106,23 @@ public class IP {
         System.out.println("Country: " + getCountry());
         System.out.println("Status: " + getType());
         System.out.println("Is Tor: " + getIsTor());
-        System.out.println("Overall Score: " + getScore());
+        System.out.println("Overall Score: % " + String.format("%.2f", getScore()));
         System.out.println("-------------------------");
         System.out.println("DETAILS: ");
         System.out.println("AbuseIPDB Confidence Score: " + abuseDBScore +"/100");
         System.out.println("VirusTotal Confidence Score: " + vtScore +"/92");
-        System.out.println("Is from a restricted country: " + isFromResCountry );
+
+        if(isFromResCountry){
+            System.out.println("\n!!! The IP is from a restricted country.");
+        }
+        
+        if(detail.equals("")){
+            System.out.println("No relations found.");
+        }
+        else{
+            System.out.println("\nThe IP is related with the following:");
+            System.out.println(getDetail());
+        }
         //System.out.println("IPVoid Confidence Score: " + ipVoidScore +"/96");
         System.out.println("-------------------------");
     }
