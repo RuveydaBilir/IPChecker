@@ -11,8 +11,10 @@ public class UserPref {
     private int countryISPSev;
     private int dateSev;
     private int relatedSev;
-    private ArrayList<String> resCountryList = new ArrayList<>();
-    private ArrayList<String> resIspList = new ArrayList<>();
+    private String resCountryList;
+    private String resIspList;
+    //private ArrayList<String> resCountryList = new ArrayList<>();
+    //private ArrayList<String> resIspList = new ArrayList<>();
 
     public UserPref(){
         setProperties();
@@ -22,8 +24,15 @@ public class UserPref {
         Properties prop = new Properties();
         try {
             FileInputStream fis = new FileInputStream("config.properties");
-            resCountryList = setPropertyList("RESTRICTED_COUNTRY", fis, prop);
-            resIspList = setPropertyList("RESTRICTED_ISP", fis, prop);
+            prop.load(fis);
+            //resCountryList = setPropertyList("RESTRICTED_COUNTRY", fis, prop);
+            //resIspList = setPropertyList("RESTRICTED_ISP", fis, prop);
+
+            resCountryList = prop.getProperty("RESTRICTED_COUNTRY");
+            resIspList = prop.getProperty("RESTRICTED_ISP");
+
+            //System.out.println("Country list: " + resCountryList);
+            //System.out.println("ISP list: " + resIspList);
 
             countryISPSev = Integer.parseInt(prop.getProperty("COUNTRY_ISP_SEV","5").trim());
             abuseDBSev = Integer.parseInt(prop.getProperty("ABUSEDB_SEV","30").trim());
@@ -32,9 +41,6 @@ public class UserPref {
             relatedSev = Integer.parseInt(prop.getProperty("RELATED_SEV","20").trim());
 
             //knownIPList = setPropertyList("KNOWN_IPS", fis, prop);
-
-            prop.load(fis);
-
             //System.out.println(resCountryList);
             //System.out.println(resIspList);
             //System.out.println(knownIPList);
@@ -72,10 +78,20 @@ public class UserPref {
     int getRelatedSev(){
         return relatedSev;
     }
+
+    String getResCountryList(){
+        return resCountryList;
+    }
+    String getResISPList(){
+        return resIspList;
+    }
+
+    /*
     ArrayList<String> getResCountryList(){
         return resCountryList;
     }
     ArrayList<String> getResISPList(){
         return resIspList;
     }
+     */
 }

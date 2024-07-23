@@ -41,7 +41,7 @@ public class IPWizard {
         double cISPSev = userPref.getCountryISPSev();
         double dateSev = userPref.getDateSev();
         double relatedSev = userPref.getRelatedSev();
-        double dateScore = 1;
+        double dateScore = 0;
         double cISPScore = 0;
 
         //CALCULATIONNNSSS!!!!!!!!!!!!!!!!!!!
@@ -68,6 +68,15 @@ public class IPWizard {
         } else {
             ip.setIsFromResCount(false);
         }
+        if (userPref.getResISPList().contains(ip.getISP().replace("\"", ""))) {
+            ip.setIsFromResISP(true);
+            cISPScore = 1;
+        } else {
+            ip.setIsFromResISP(false);
+        }
+        if(ip.isActive()){
+            dateScore=1;
+        }
         
         double score = (abuseDBNormalizedScore * abuseDBWeight 
                         + vtNormalizedScore * vtWeight 
@@ -86,6 +95,7 @@ public class IPWizard {
         String ipStr = scan.nextLine();
         IP ip = new IP(correctIP(ipStr));
         System.out.println("Checking IPv4 address " + ip.getIP());
+        System.out.println();
         
         RequestResponse reqRes = new RequestResponse(ip);
         reqRes.sendGetRequestAbuseDB();

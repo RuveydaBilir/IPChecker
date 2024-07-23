@@ -13,7 +13,6 @@ import javax.net.ssl.HttpsURLConnection;
 public class RequestResponse {
     private String abuseIPDB_api;
     private String vt_api;
-    //private String ipVoid_api;
     private final String ABUSE_IP_URL = "https://api.abuseipdb.com/api/v2/check?ipAddress="; 
     private final String VT_URL = "https://www.virustotal.com/api/v3/"; 
     private final IP ip;
@@ -64,6 +63,9 @@ public class RequestResponse {
 
     private String extractValue(String content, String key){
         String searchKey = "\"" + key + "\":";
+        if(!content.contains(searchKey)){
+            return "";
+        }
         int start = content.indexOf(searchKey) + searchKey.length();
         int end1 = content.indexOf(",", start);
         int end2 = content.indexOf("}", start);
@@ -90,15 +92,16 @@ public class RequestResponse {
         ip.setISP(isp);
         ip.setIsTor(isTor);
 
-        //System.out.println(jsonContent);
+       // System.out.println(jsonContent);
     }  
     
     public void sendGetRequestVTforIP() throws Exception{
         String urlStr = VT_URL + "ip_addresses/" + ip.getIP();
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        ip.setLastDate(Long.parseLong(extractValue(jsonContent, "last_modification_date")));
+        //System.out.println(jsonContent);
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
-        //System.out.println(jsonContent);
         int abuseScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
         ip.setVTScore(abuseScore);
 
@@ -136,34 +139,38 @@ public class RequestResponse {
     }
 
     public void sendGetRequestVTforFile(String fileID) throws Exception{
+        String rule = "";
         String urlStr = VT_URL + "files/" + fileID;
         urlStr = urlStr.replace("\"", "");
         //String urlStr = VT_URL + "files/" + fileID + "/relationships/communicating_files";
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         String name = extractValue(jsonContent, "meaningful_name");
         //System.out.println(jsonContent);
-        String rule = extractValue(jsonContent, "rule_title");
+        if(jsonContent.contains("rule_category")){
+            rule = extractValue(jsonContent, "rule_category");
+        }
+        else if(jsonContent.contains("ruleset_name")){
+            rule = extractValue(jsonContent, "ruleset_name");
+        }
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
         int malScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
+
         //System.out.println("Malware Score: " + malScore);
         String detail = """
                         File ID:\s""" + fileID.replace("\"", "").trim()
                         + "\n\tKnown Name: " + name
                         + "\n\tVirusTotal Score: " + malScore +"/92"
-                        + "\n\tRule: " + rule;
+                        + "\n\tCategory: " + rule;
         
         ip.addDetail(detail);
         ip.addRelationScore(malScore);
     } 
 
     public void sendGetRequestVTforDomain(String domainID) throws Exception{
-        int lastIndex = domainID.lastIndexOf(".");
-        String tempString = domainID.substring(0, lastIndex);
-        int secondLastIndex = tempString.lastIndexOf(".");
-        domainID = domainID.substring(secondLastIndex + 1);
+        String newDomain = domainID.replace(ip.getIP(), "");
 
-        String urlStr = VT_URL + "domains/" + domainID;
+        String urlStr = VT_URL + "domains/" + newDomain;
         urlStr = urlStr.replace("\"", "");
         //String urlStr = VT_URL + "files/" + fileID + "/relationships/communicating_files";
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
@@ -172,14 +179,13 @@ public class RequestResponse {
         jsonContent = jsonContent.substring(index);
         int malScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
         String detail = """
-                        Domain Name:\s""" + domainID.replace("\"", "").trim()
+                        Domain Name:\s""" + newDomain.replace("\"", "").trim()
                         + "\n\tVirusTotal Score: " + malScore +"/92";
                         //+ "\n\tRule: " + rule;
         
         ip.addDetail(detail);
         ip.addRelationScore(malScore);
     } 
-
 
     public void getTitle(StringBuilder htmlContent){ //Test amaçlı
         Pattern titlePattern = Pattern.compile("<title>(.*?)</title>", Pattern.CASE_INSENSITIVE);
