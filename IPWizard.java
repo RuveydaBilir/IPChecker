@@ -88,6 +88,7 @@ public class IPWizard {
     }
     
     public static void main(String[] args) throws Exception {
+        ConfigManager cm = new ConfigManager();
         System.out.println("Welcome to the IP Wizard.");
         //System.out.println("It can check every IP score you need.\n");
         Scanner scan = new Scanner(System.in);
