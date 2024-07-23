@@ -3,9 +3,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class IPWizard {
-    //private static final String test_url = "https://example.com/";
     private static final UserPref userPref = new UserPref();
-    //private static IPList ipList = new IPList();
 
     private static String correctIP(String ipStr) throws Exception{
         String regex = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
@@ -64,7 +62,7 @@ public class IPWizard {
         double vtNormalizedScore = ip.getVTScore() / 92.0;
         double listNormalizedScore = sumOfList / 92.0;
         
-        if (userPref.getResCountryList().contains(ip.getCountry())) {
+        if (userPref.getResCountryList().contains(ip.getCountry().replace("\"", ""))) {
             ip.setIsFromResCount(true);
             cISPScore = 1;
         } else {
@@ -82,7 +80,7 @@ public class IPWizard {
     
     public static void main(String[] args) throws Exception {
         System.out.println("Welcome to the IP Wizard.");
-        System.out.println("It can check every IP score you need.\n");
+        //System.out.println("It can check every IP score you need.\n");
         Scanner scan = new Scanner(System.in);
         System.out.print(">> Enter the IPv4 address: ");
         String ipStr = scan.nextLine();

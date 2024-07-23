@@ -94,11 +94,8 @@ public class RequestResponse {
     }  
     
     public void sendGetRequestVTforIP() throws Exception{
-        //EXCELLENT IP: 195.208.216.109
         String urlStr = VT_URL + "ip_addresses/" + ip.getIP();
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
-        //System.out.println("CONTENT:");
-        //System.out.println(jsonContent);
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
         //System.out.println(jsonContent);
@@ -116,14 +113,11 @@ public class RequestResponse {
         //System.out.println(jsonContent);
         int count = Integer.parseInt(extractValue(jsonContent, "count"));
         System.out.println("Number of resolution domains: " + count);
-        for(int i=0; i<count && i<5; i++){
+        for(int i=0; i<count && i<3; i++){
             
             String fileID = extractValue(jsonContent, "id");
             jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
-            //sendGetRequestVTforFile(fileID);
-            //sendGetRequestVTforDomain(fileID);
-            
-            System.out.println("A resolution ID");
+            sendGetRequestVTforDomain(fileID);
         }
     }
 
@@ -133,7 +127,7 @@ public class RequestResponse {
         //System.out.println(jsonContent);
         int count = Integer.parseInt(extractValue(jsonContent, "count"));
         System.out.println("Number of communicating files: " + count);
-        for(int i=0; i<count && i<5 ; i++){
+        for(int i=0; i<count && i<3 ; i++){
             String fileID = extractValue(jsonContent, "id");
             jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
             sendGetRequestVTforFile(fileID);
@@ -151,7 +145,7 @@ public class RequestResponse {
         String rule = extractValue(jsonContent, "rule_title");
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
-        String malScore = extractValue(jsonContent, "malicious");
+        int malScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
         //System.out.println("Malware Score: " + malScore);
         String detail = """
                         File ID:\s""" + fileID.replace("\"", "").trim()
@@ -160,7 +154,7 @@ public class RequestResponse {
                         + "\n\tRule: " + rule;
         
         ip.addDetail(detail);
-        ip.addRelationScore(Integer.parseInt(malScore));
+        ip.addRelationScore(malScore);
     } 
 
     public void sendGetRequestVTforDomain(String domainID) throws Exception{
@@ -173,23 +167,17 @@ public class RequestResponse {
         urlStr = urlStr.replace("\"", "");
         //String urlStr = VT_URL + "files/" + fileID + "/relationships/communicating_files";
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
-        System.out.println(jsonContent);
-        /*String name = extractValue(jsonContent, "meaningful_name");
         //System.out.println(jsonContent);
-        String rule = extractValue(jsonContent, "rule_title");
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
-        String malScore = extractValue(jsonContent, "malicious");
-        //System.out.println("Malware Score: " + malScore);
+        int malScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
         String detail = """
-                        File ID:\s""" + domainID.replace("\"", "").trim()
-                        + "\n\tKnown Name: " + name
-                        + "\n\tVirusTotal Score: " + malScore +"/92"
-                        + "\n\tRule: " + rule;
+                        Domain Name:\s""" + domainID.replace("\"", "").trim()
+                        + "\n\tVirusTotal Score: " + malScore +"/92";
+                        //+ "\n\tRule: " + rule;
         
         ip.addDetail(detail);
-        ip.addRelationScore(Integer.parseInt(malScore));
-        */
+        ip.addRelationScore(malScore);
     } 
 
 

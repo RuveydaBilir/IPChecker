@@ -10,7 +10,7 @@ public class IP {
     private int vtScore;
     private boolean isTor;
     private boolean isFromResCountry;
-    private ArrayList<Integer> relationScores = new ArrayList<>();
+    private final ArrayList<Integer> relationScores = new ArrayList<>();
     private final String ip;
 
     public IP(String newIp){
@@ -43,13 +43,13 @@ public class IP {
     void updateScore(double scoreAdd){
         score = scoreAdd;
 
-        if(score<30){
+        if(score<20){
             setType("Clean");
         }
-        else if(score<50){
+        else if(score<40){
             setType("OK");
         }
-        else if(score<80){
+        else if(score<60){
             setType("Suspicious");
         }
         else{
@@ -113,14 +113,14 @@ public class IP {
         System.out.println("VirusTotal Confidence Score: " + vtScore +"/92");
 
         if(isFromResCountry){
-            System.out.println("\n!!! The IP is from a restricted country.");
+            System.out.println("\nThe IP is from a restricted country.");
         }
         
         if(detail.equals("")){
             System.out.println("No relations found.");
         }
         else{
-            System.out.println("\nThe IP is related with the following:");
+            System.out.println("\nThe IP is related with the following:\n");
             System.out.println(getDetail());
         }
         //System.out.println("IPVoid Confidence Score: " + ipVoidScore +"/96");
