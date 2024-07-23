@@ -110,10 +110,12 @@ public class RequestResponse {
     }
 
     public void sendGetRequestVTforResolutions() throws Exception{
+        //String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/related_domains";
         String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/resolutions";
         //String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/communicating_files";
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         //System.out.println(jsonContent);
+        //TODO: GET THE DOMAINS WITH THE HIGHEST SCORE, NOT IN ORDER
         int count = Integer.parseInt(extractValue(jsonContent, "count"));
         System.out.println("Number of resolution domains: " + count);
         for(int i=0; i<count && i<3; i++){

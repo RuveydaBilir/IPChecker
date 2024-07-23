@@ -1,5 +1,7 @@
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class IP {
@@ -76,8 +78,8 @@ public class IP {
     void setIsFromResISP(boolean is){
         isFromResISP = is;
     }
-    void setLastDate(long timestamp){
-        this.timestamp = timestamp;
+    void setLastDate(long time){
+        this.timestamp = time;
     }
 
     int getAbuseDBScore(){
@@ -124,10 +126,20 @@ public class IP {
         ZonedDateTime currentZonedDateTime = ZonedDateTime.now(zoneId);
 
         Duration duration = Duration.between(ipZonedDateTime, currentZonedDateTime);
-        */
         Instant compCurrent = Instant.now();
         Instant ipInstant = Instant.ofEpochSecond(timestamp);
         Duration duration = Duration.between(ipInstant, compCurrent);
+        */
+
+        ZoneId systemTimeZone = ZoneId.systemDefault();
+
+        Instant ipInstant = Instant.ofEpochSecond(timestamp);
+        ZonedDateTime ipZonedDateTime = ZonedDateTime.ofInstant(ipInstant, systemTimeZone);
+
+        ZonedDateTime currentZonedDateTime = ZonedDateTime.now(systemTimeZone);
+
+        Duration duration = Duration.between(ipZonedDateTime, currentZonedDateTime);
+
         if(duration.isNegative()){
             duration = duration.negated();
         }
@@ -171,13 +183,11 @@ public class IP {
         String duration = getDuration();
         System.out.println("Is Active: " + isActive);
         System.out.println("[Last Analysis: " +duration+"] ");
-        System.out.println("Is restricted country: " + isFromResCountry);
-        System.out.println("Is restricted ISP: " + isFromResISP);
         if(isFromResCountry){
-            System.out.println("\nThe IP is from a restricted country.");
+            System.out.println("\nThis IP is from a restricted country.");
         }
         if(isFromResISP){
-            System.out.println("\nThe IP is from a restricted ISP.");
+            System.out.println("\nThis IP is from a restricted ISP.");
         }
         
         if(detail.equals("")){

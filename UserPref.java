@@ -1,8 +1,6 @@
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
 
 public class UserPref {
@@ -28,8 +26,8 @@ public class UserPref {
             //resCountryList = setPropertyList("RESTRICTED_COUNTRY", fis, prop);
             //resIspList = setPropertyList("RESTRICTED_ISP", fis, prop);
 
-            resCountryList = prop.getProperty("RESTRICTED_COUNTRY");
-            resIspList = prop.getProperty("RESTRICTED_ISP");
+            resCountryList = prop.getProperty("RESTRICTED_COUNTRY").trim();
+            resIspList = prop.getProperty("RESTRICTED_ISP").trim();
 
             //System.out.println("Country list: " + resCountryList);
             //System.out.println("ISP list: " + resIspList);
@@ -50,7 +48,7 @@ public class UserPref {
         }
     }
 
-    private ArrayList<String> setPropertyList(String key, FileInputStream fis, Properties prop) throws IOException{
+    /*private ArrayList<String> setPropertyList(String key, FileInputStream fis, Properties prop) throws IOException{
         prop.load(fis);
         return convertToArrayList(prop.getProperty(key));
     }
@@ -61,7 +59,7 @@ public class UserPref {
 
         // Convert the array to an ArrayList
         return new ArrayList<>(Arrays.asList(elements));
-    }
+    }*/
 
     int getAbuseDBSev(){
         return abuseDBSev;
