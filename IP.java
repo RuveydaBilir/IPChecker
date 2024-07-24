@@ -144,12 +144,11 @@ public class IP {
             duration = duration.negated();
         }
         
-        long seconds = duration.getSeconds();
+        long seconds = duration.toSecondsPart();
         long years = seconds / (365 * 24 * 3600);
-        long remainingSecondsAfterYears = seconds % (365 * 24 * 3600);
-        long days = remainingSecondsAfterYears / (24 * 3600);
-        long hours = (remainingSecondsAfterYears % (24 * 3600)) / 3600;
-        long minutes = (remainingSecondsAfterYears % 3600) / 60;
+        long days = duration.toDaysPart();
+        long hours = duration.toHoursPart();
+        long minutes = duration.toMinutesPart();
 
         if(years>0){
             isActive = false;
@@ -164,6 +163,7 @@ public class IP {
             output =  days + " days, " + hours + " hours, " + minutes + " minutes ago";
         }
         //System.out.println("Difference: " + years + " years, " + days + " days, " + hours + " hours, " + minutes + " minutes, ");
+        
         return output;
 
     }

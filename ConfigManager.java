@@ -8,7 +8,7 @@ public class ConfigManager {
 
     private static final String CONFIG_FILE = "config.prop"; //not to lose actual one change this after last commit
     private final Properties properties;
-    //TODO: NOT ADDING PROPERTİES IN ORDER ALSO I WANT TO ADD COMMENT BETWEEN SOME LINED
+    //TODO: NOT ADDING PROPERTIES IN ORDER ALSO I WANT TO ADD COMMENT BETWEEN SOME LINES
 
     public ConfigManager() throws IOException {
         properties = new Properties();

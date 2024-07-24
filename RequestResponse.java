@@ -63,20 +63,39 @@ public class RequestResponse {
 
     private String extractValue(String content, String key){
         String searchKey = "\"" + key + "\":";
-        if(!content.contains(searchKey)){
+        
+        // Check if the key exists in the content
+        if (!content.contains(searchKey)) {
             return "";
         }
+
         int start = content.indexOf(searchKey) + searchKey.length();
+
+        // Ensure the start index is within bounds
+        if (start >= content.length()) {
+            return "";
+        }
+
+        // Find the indices of the delimiters after the start position
         int end1 = content.indexOf(",", start);
         int end2 = content.indexOf("}", start);
-        int end = end1;
-        if(end1<end2 && end1>-1){
-            end = end1;
+        int end3 = content.indexOf(";", start);
+
+        // Initialize end index to a large value
+        int end = Math.min(content.length(), Math.min(end1 != -1 ? end1 : content.length(),
+                                                    end2 != -1 ? end2 : content.length()));
+
+        if (end3 != -1) {
+            end = Math.min(end, end3);
         }
-        else if(end2<end1 && end2>-1){
-            end = end2;
+
+        // Ensure the end index is valid
+        if (start > end) {
+            return ""; // Invalid range, return empty string
         }
-        return content.substring(start,end).trim();
+
+        // Extract the substring and trim it
+        return content.substring(start, end).trim();
     }
 
     public void sendGetRequestAbuseDB() throws Exception{ // Should I add this?!: String urlStr, Map<String, String> headers
@@ -98,7 +117,9 @@ public class RequestResponse {
     public void sendGetRequestVTforIP() throws Exception{
         String urlStr = VT_URL + "ip_addresses/" + ip.getIP();
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
-        ip.setLastDate(Long.parseLong(extractValue(jsonContent, "last_modification_date")));
+        //System.out.println(jsonContent);
+        String date = extractValue(jsonContent, "last_analysis_date");
+        ip.setLastDate(Long.parseLong(date));
         //System.out.println(jsonContent);
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
