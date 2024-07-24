@@ -28,9 +28,7 @@ public class RequestResponse {
             FileInputStream fis = new FileInputStream("config.properties");
             prop.load(fis);
             abuseIPDB_api = prop.getProperty("ABUSEDB_API");
-            //System.out.println("AbuseIPDB API: " + abuseIPDB_api);
             vt_api = prop.getProperty("VT_API");
-            //System.out.println("VT API: " + vt_api);
 
         } catch (IOException e) {
             System.err.println("ERROR: Reading API keys failed. Please check config.properties file.");
@@ -50,7 +48,6 @@ public class RequestResponse {
             throw new RuntimeException("GET request for "+urlStr+" failed. Response code: " + responseCode);
         }
 
-        // Reading html part
         StringBuilder htmlContent = new StringBuilder();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))){
             String inputLine;
@@ -64,24 +61,20 @@ public class RequestResponse {
     private String extractValue(String content, String key){
         String searchKey = "\"" + key + "\":";
         
-        // Check if the key exists in the content
         if (!content.contains(searchKey)) {
             return "";
         }
 
         int start = content.indexOf(searchKey) + searchKey.length();
 
-        // Ensure the start index is within bounds
         if (start >= content.length()) {
             return "";
         }
 
-        // Find the indices of the delimiters after the start position
         int end1 = content.indexOf(",", start);
         int end2 = content.indexOf("}", start);
         int end3 = content.indexOf(";", start);
 
-        // Initialize end index to a large value
         int end = Math.min(content.length(), Math.min(end1 != -1 ? end1 : content.length(),
                                                     end2 != -1 ? end2 : content.length()));
 
@@ -89,12 +82,10 @@ public class RequestResponse {
             end = Math.min(end, end3);
         }
 
-        // Ensure the end index is valid
         if (start > end) {
-            return ""; // Invalid range, return empty string
+            return ""; 
         }
 
-        // Extract the substring and trim it
         return content.substring(start, end).trim();
     }
 
@@ -133,13 +124,11 @@ public class RequestResponse {
     public void sendGetRequestVTforResolutions() throws Exception{
         //String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/related_domains";
         String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/resolutions";
-        //String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/communicating_files";
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         //System.out.println(jsonContent);
-        //TODO: GET THE DOMAINS WITH THE HIGHEST SCORE, NOT IN ORDER
         int count = Integer.parseInt(extractValue(jsonContent, "count"));
         System.out.println("Number of resolution domains: " + count);
-        for(int i=0; i<count && i<3; i++){
+        for(int i=0; i<count && i<4; i++){
             
             String fileID = extractValue(jsonContent, "id");
             jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
@@ -153,12 +142,11 @@ public class RequestResponse {
         //System.out.println(jsonContent);
         int count = Integer.parseInt(extractValue(jsonContent, "count"));
         System.out.println("Number of communicating files: " + count);
-        for(int i=0; i<count && i<3 ; i++){
+        for(int i=0; i<count && i<4 ; i++){
             String fileID = extractValue(jsonContent, "id");
             jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
             sendGetRequestVTforFile(fileID);
         }
-        //sendGetRequestVTforFile("4ffcf8024d170f3ab274ac9b90cb41520060feefba7c481b3548c77efb2477b9");
     }
 
     public void sendGetRequestVTforFile(String fileID) throws Exception{
@@ -209,6 +197,16 @@ public class RequestResponse {
         ip.addDetail(detail);
         ip.addRelationScore(malScore);
     } 
+
+    public void testFunc() throws Exception{
+        //String newDomain = domainID.replace(ip.getIP(), "");
+        String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/resolutions";
+        urlStr = urlStr.replace("\"", "");
+        //String urlStr = VT_URL + "files/" + fileID + "/relationships/communicating_files";
+        String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+
+        System.out.println(jsonContent);
+    }
 
     public void getTitle(StringBuilder htmlContent){ //Test amaçlı
         Pattern titlePattern = Pattern.compile("<title>(.*?)</title>", Pattern.CASE_INSENSITIVE);
