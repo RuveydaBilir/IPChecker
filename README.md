@@ -27,7 +27,7 @@ After set-up, you can start using the app from terminal by typing the same comma
 
 
 ## For API keys
-Please visit and sign-up to these websites to have free API keys: 
+Please visit and sign-up to these websites to have API keys (with free and premium options): 
 * VirusTotal: https://www.virustotal.com/gui/home/upload
 * AbuseIPDB: https://www.abuseipdb.com/
   
