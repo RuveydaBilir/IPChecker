@@ -9,21 +9,21 @@ For this project, AbuseIPDB and VirusTotal APIs are used.
 ## How to install
 Commands for installation and initial set-up:
 1. Clone the repository on your computer:
-``` git clone https://github.com/RuveydaBilir/IPChecker.git ```
+```git clone https://github.com/RuveydaBilir/IPChecker.git ```
 
 2. Navigate to the project folder:
-``` cd IPChecker```
+```cd IPChecker```
 
-3. Setup configuration:
-```IPWizard.bat``` or ```.\IPWizard.bat```
+3. Setup configuration: Type
+```IPWizard.bat``` or ```.\IPWizard.bat``` on the command line
 
 This initial run will create "config.properties" file in the folder for user-specifications. Make sure to fill API areas for connections, and other areas based on your needs.
 
 After set-up, you can start using the app from terminal by typing the same commands.
 
 ## Considerations & Prerequisities
-* Make sure java jdk and javac is installed.
-* If you are using free public API, check their quotas. This app is making approximately 10 requests per IP.
+* Make sure java jdk and javac are installed.
+* If you are using free public APIs, check their quotas. This app makes approximately 10 requests per IP.
 
 
 ## For API keys
