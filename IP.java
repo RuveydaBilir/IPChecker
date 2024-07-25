@@ -119,18 +119,6 @@ public class IP {
     }
     String getDuration(){
         String output;
-        /*
-        ZoneId zoneId = ZoneId.systemDefault(); // Get the system's default time zone
-        Instant ipInstant = Instant.ofEpochSecond(timestamp);
-        ZonedDateTime ipZonedDateTime = ZonedDateTime.ofInstant(ipInstant, zoneId);
-        ZonedDateTime currentZonedDateTime = ZonedDateTime.now(zoneId);
-
-        Duration duration = Duration.between(ipZonedDateTime, currentZonedDateTime);
-        Instant compCurrent = Instant.now();
-        Instant ipInstant = Instant.ofEpochSecond(timestamp);
-        Duration duration = Duration.between(ipInstant, compCurrent);
-        */
-
         ZoneId systemTimeZone = ZoneId.systemDefault();
 
         Instant ipInstant = Instant.ofEpochSecond(timestamp);
@@ -161,11 +149,8 @@ public class IP {
         else{
             isActive = true;
             output =  days + " days, " + hours + " hours, " + minutes + " minutes ago";
-        }
-        //System.out.println("Difference: " + years + " years, " + days + " days, " + hours + " hours, " + minutes + " minutes, ");
-        
+        }        
         return output;
-
     }
 
     void print(){

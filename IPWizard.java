@@ -35,6 +35,18 @@ public class IPWizard {
         }
     }
 
+    private static void banner(){
+        String banner ="""
+                        ___ ______        _____ _____   _    ____  ____  
+                       |_ _|  _ \\ \\      / /_ _|__  /  / \\  |  _ \\|  _ \\ 
+                        | || |_) \\ \\ /\\ / / | |  / /  / _ \\ | |_) | | | |
+                        | ||  __/ \\ V  V /  | | / /_ / ___ \\|  _ <| |_| |
+                       |___|_|     \\_/\\_/  |___/____/_/   \\_\\_| \\_\\____/ 
+                       """;
+        
+        System.out.println(banner);
+    }
+
     private static void calculate(IP ip) {
         double abuseDBSev = userPref.getAbuseDBSev();
         double vtSev = userPref.getvtSev();
@@ -89,6 +101,7 @@ public class IPWizard {
     
     public static void main(String[] args) throws Exception {
         ConfigManager cm = new ConfigManager();
+        banner();
         System.out.println("Welcome to the IP Wizard.");
         //System.out.println("It can check every IP score you need.\n");
         Scanner scan = new Scanner(System.in);
@@ -105,30 +118,3 @@ public class IPWizard {
         ip.print();
     }
 }
-
-/*
- * Correct calculation:
- * double score = (abuseDBNormalizedScore * abuseDBWeight 
-                        + vtNormalizedScore * vtWeight 
-                        + listNormalizedScore * relatedWeight 
-                        + cISPScore * cISPWeight 
-                        + dateScore * dateWeight) * 100;
- */
-
-/*
- * private static void calculate(IP ip){
-        double totalSev = userPref.getAbuseDBSev()+userPref.getvtSev();
-        double score = (((ip.getAbuseDBScore()/100)*(userPref.getAbuseDBSev()/totalSev))+((ip.getVTScore()/92)*(userPref.getAbuseDBSev()/totalSev)))*(100/2);
-
-        if(userPref.getResCountryList().contains(ip.getCountry())){
-            score = (score*100 + 50)/200;
-            ip.setIsFromResCount(true);
-        }
-        else{
-            ip.setIsFromResCount(false);
-        }
-        //((abuseDBScore/100)+(vtScore/92))*(100/2);
-
-        ip.updateScore(score);
-    }
- */

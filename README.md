@@ -16,5 +16,5 @@ Please visit and sign-up to these websites to have free API keys:
 * AbuseIPDB: https://www.abuseipdb.com/
   
 For their API documentation:
-* VirusTotal: https://docs.virustotal.com/reference/overview
+* VirusTotal: https://docs.virustotal.com/reference/overview , https://docs.virustotal.com/reference/ip-object 
 * AbuseIPDB: https://www.abuseipdb.com/api.html

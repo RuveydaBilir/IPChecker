@@ -119,6 +119,7 @@ public class RequestResponse {
 
         sendGetRequestVTforResolutions();
         sendGetRequestVTforComFiles();
+        sendGetRequestVTforRefFiles();
     }
 
     public void sendGetRequestVTforResolutions() throws Exception{
@@ -128,7 +129,7 @@ public class RequestResponse {
         //System.out.println(jsonContent);
         int count = Integer.parseInt(extractValue(jsonContent, "count"));
         System.out.println("Number of resolution domains: " + count);
-        for(int i=0; i<count && i<4; i++){
+        for(int i=0; i<count && i<3; i++){
             
             String fileID = extractValue(jsonContent, "id");
             jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
@@ -138,11 +139,26 @@ public class RequestResponse {
 
     public void sendGetRequestVTforComFiles() throws Exception{
         String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/communicating_files";
+        //referrer_files
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         //System.out.println(jsonContent);
         int count = Integer.parseInt(extractValue(jsonContent, "count"));
         System.out.println("Number of communicating files: " + count);
-        for(int i=0; i<count && i<4 ; i++){
+        for(int i=0; i<count && i<3 ; i++){
+            String fileID = extractValue(jsonContent, "id");
+            jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
+            sendGetRequestVTforFile(fileID);
+        }
+    }
+
+    public void sendGetRequestVTforRefFiles() throws Exception{
+        String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/referrer_files";
+        //referrer_files
+        String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
+        //System.out.println(jsonContent);
+        int count = Integer.parseInt(extractValue(jsonContent, "count"));
+        System.out.println("Number of referrer files: " + count);
+        for(int i=0; i<count && i<3 ; i++){
             String fileID = extractValue(jsonContent, "id");
             jsonContent = jsonContent.substring(jsonContent.indexOf(fileID));
             sendGetRequestVTforFile(fileID);
