@@ -1,3 +1,4 @@
 # Ignore configuration files
 config.properties
 config.prop
+/bin
