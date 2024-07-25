@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 public class IPWizard {
     private static final UserPref userPref = new UserPref();
+    private static final String VOL = "1.0";
 
     private static String correctIP(String ipStr) throws Exception{
         String regex = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
@@ -42,7 +43,9 @@ public class IPWizard {
                         | || |_) \\ \\ /\\ / / | |  / /  / _ \\ | |_) | | | |
                         | ||  __/ \\ V  V /  | | / /_ / ___ \\|  _ <| |_| |
                        |___|_|     \\_/\\_/  |___/____/_/   \\_\\_| \\_\\____/ 
-                       """;
+
+                       """
+                       + "\t".repeat(5) + "vol: " + VOL +"\n";
         
         System.out.println(banner);
     }
@@ -102,7 +105,6 @@ public class IPWizard {
     public static void main(String[] args) throws Exception {
         ConfigManager cm = new ConfigManager();
         banner();
-        System.out.println("Welcome to the IP Wizard.");
         //System.out.println("It can check every IP score you need.\n");
         Scanner scan = new Scanner(System.in);
         System.out.print(">> Enter the IPv4 address: ");
