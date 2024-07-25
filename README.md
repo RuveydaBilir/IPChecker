@@ -1,4 +1,4 @@
-# IPChecker
+# IPWizard
 A Java terminal application that analyzes and scores IP addresses based on user-specified factors.
 
 ## Project Description
