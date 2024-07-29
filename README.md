@@ -2,7 +2,7 @@
 An OSINT tool that analyzes and scores IP addresses based on user-specified factors.
 
 ## Project Description
-This OSINT tool, designed for Windows, offers comprehensive IP address analysis for security analysts by querying multiple databases. It retrieves the IP's ISP, country, recency of activity, score, and related domains and files. It then calculates a maliciousness score based on these factors and a user-specified restricted country and ISP list. Users have the flexibility to customize the weight of each factor, ensuring that the scoring system aligns with their specific security requirements and threat assessment criteria. After calculations, it returns the overall score percentage and the detailed information retrieved for the IP.
+This OSINT tool, offers comprehensive IP address analysis for cybersecurity professionals by querying multiple databases. It retrieves the IP's ISP, country, recency of activity, score, and related domains and files. It then calculates a maliciousness score based on these factors and a user-specified restricted country and ISP list. Users have the flexibility to customize the weight of each factor, ensuring that the scoring system aligns with their specific security requirements and threat assessment criteria. After calculations, it returns the overall score percentage and the detailed information retrieved for the IP.
 
 For this project, AbuseIPDB and VirusTotal APIs are used. 
 
@@ -11,13 +11,16 @@ Commands for installation and initial set-up:
 1. Clone the repository on your computer:
 ```git clone https://github.com/RuveydaBilir/IPWizard.git ```
 
-2. Navigate to the project folder:
+2. Navigate to the project directory:
 ```cd IPWizard ```
 
-3. Setup configuration: Type
-```IPWizard.bat``` or ```.\IPWizard.bat``` on the command line.
+3. Setup configuration:
+   * For Windows: Type ```IPWizard.bat``` or ```.\IPWizard.bat``` on the command line.
+   * For Linux:
+         First type ```chmod +x IPWizard.sh``` to make the script file executable.
+         Then type ```IPWizard.sh``` or ```.\IPWizard.sh``` on the command line.
 
-This initial run will create "config.properties" file in the folder for user-specifications. Make sure to fill API areas for connections, and other areas based on your needs.
+This initial run will create "config.properties" file in the directory for user-specifications. **Make sure to fill API areas for connections**, and other areas based on your needs.
 
 After set-up, you can start using the tool from terminal by typing the same commands.
 
