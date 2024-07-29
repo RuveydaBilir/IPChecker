@@ -13,7 +13,7 @@ public class IP {
     private String type; 
     private int abuseDBScore;
     private int vtScore;
-    private boolean isTor;
+    private String isTor;
     private boolean isFromResCountry;
     private boolean isFromResISP;
     private boolean isActive;
@@ -37,7 +37,7 @@ public class IP {
     void setCountry(String newCountry){
         country = newCountry;
     }
-    void setIsTor(boolean isTor){
+    void setIsTor(String isTor){
         this.isTor=isTor;
     }
     void setIsFromResCount(boolean is){
@@ -108,7 +108,7 @@ public class IP {
     double getScore(){
         return score;
     }
-    boolean getIsTor(){
+    String getIsTor(){
         return isTor;
     }
     boolean isActive(){
@@ -118,6 +118,9 @@ public class IP {
         return relationScores;
     }
     String getDuration(){
+        if(timestamp<=0){
+            return "Not Found";
+        }
         String output;
         ZoneId systemTimeZone = ZoneId.systemDefault();
 
@@ -142,9 +145,9 @@ public class IP {
             isActive = false;
             output = "More than 1 year ago";
         }
-        else if(days>210){
+        else if(days>150){
             isActive = false;
-            output = "More than 7 months ago";
+            output = "More than 5 months ago";
         }
         else{
             isActive = true;

@@ -89,14 +89,22 @@ public class RequestResponse {
         return content.substring(start, end).trim();
     }
 
+    private int extractIntValue(String content, String key){
+        String value = extractValue(content, key);
+        if(value.equals("")){
+            return 0;
+        }
+        return Integer.parseInt(value);
+    }
+
     public void sendGetRequestAbuseDB() throws Exception{ // Should I add this?!: String urlStr, Map<String, String> headers
         String urlStr = ABUSE_IP_URL + ip.getIP();
         String jsonContent= sendGetRequest(urlStr,"Key",abuseIPDB_api).toString();
 
-        int abuseScore = Integer.parseInt(extractValue(jsonContent, "abuseConfidenceScore"));
+        int abuseScore = extractIntValue(jsonContent, "abuseConfidenceScore");
         String coutry = extractValue(jsonContent, "countryCode");
         String isp = extractValue(jsonContent, "isp");
-        boolean isTor = Boolean.parseBoolean(extractValue(jsonContent, "isTor"));
+        String isTor = extractValue(jsonContent, "isTor");
         ip.setAbuseDBScore(abuseScore);
         ip.setCountry(coutry);
         ip.setISP(isp);
@@ -110,11 +118,13 @@ public class RequestResponse {
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         //System.out.println(jsonContent);
         String date = extractValue(jsonContent, "last_analysis_date");
-        ip.setLastDate(Long.parseLong(date));
+        if(date.length()>0){
+            ip.setLastDate(Long.parseLong(date));
+        }
         //System.out.println(jsonContent);
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
-        int abuseScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
+        int abuseScore = extractIntValue(jsonContent, "malicious")+extractIntValue(jsonContent, "suspicious");
         ip.setVTScore(abuseScore);
 
         sendGetRequestVTforResolutions();
@@ -123,11 +133,10 @@ public class RequestResponse {
     }
 
     public void sendGetRequestVTforResolutions() throws Exception{
-        //String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/related_domains";
         String urlStr = VT_URL + "ip_addresses/" + ip.getIP() + "/relationships/resolutions";
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         //System.out.println(jsonContent);
-        int count = Integer.parseInt(extractValue(jsonContent, "count"));
+        int count = extractIntValue(jsonContent, "count");
         System.out.println("Number of resolution domains: " + count);
         for(int i=0; i<count && i<3; i++){
             
@@ -142,7 +151,7 @@ public class RequestResponse {
         //referrer_files
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         //System.out.println(jsonContent);
-        int count = Integer.parseInt(extractValue(jsonContent, "count"));
+        int count = extractIntValue(jsonContent, "count");
         System.out.println("Number of communicating files: " + count);
         for(int i=0; i<count && i<3 ; i++){
             String fileID = extractValue(jsonContent, "id");
@@ -156,7 +165,7 @@ public class RequestResponse {
         //referrer_files
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         //System.out.println(jsonContent);
-        int count = Integer.parseInt(extractValue(jsonContent, "count"));
+        int count = extractIntValue(jsonContent, "count");
         System.out.println("Number of referrer files: " + count);
         for(int i=0; i<count && i<3 ; i++){
             String fileID = extractValue(jsonContent, "id");
@@ -173,15 +182,21 @@ public class RequestResponse {
         String jsonContent= sendGetRequest(urlStr,"x-apikey",vt_api).toString();
         String name = extractValue(jsonContent, "meaningful_name");
         //System.out.println(jsonContent);
+        
+        if(jsonContent.contains("type_description")){
+            rule = extractValue(jsonContent, "type_description");
+        }
+        /*
         if(jsonContent.contains("rule_category")){
             rule = extractValue(jsonContent, "rule_category");
         }
+            */
         else if(jsonContent.contains("ruleset_name")){
             rule = extractValue(jsonContent, "ruleset_name");
         }
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
-        int malScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
+        int malScore = extractIntValue(jsonContent, "malicious")+extractIntValue(jsonContent, "suspicious");
 
         //System.out.println("Malware Score: " + malScore);
         String detail = """
@@ -204,7 +219,7 @@ public class RequestResponse {
         //System.out.println(jsonContent);
         int index = jsonContent.indexOf("last_analysis_stats", 0);
         jsonContent = jsonContent.substring(index);
-        int malScore = Integer.parseInt(extractValue(jsonContent, "malicious"))+Integer.parseInt(extractValue(jsonContent, "suspicious"));
+        int malScore = extractIntValue(jsonContent, "malicious")+extractIntValue(jsonContent, "suspicious");
         String detail = """
                         Domain Name:\s""" + newDomain.replace("\"", "").trim()
                         + "\n\tVirusTotal Score: " + malScore +"/92";
